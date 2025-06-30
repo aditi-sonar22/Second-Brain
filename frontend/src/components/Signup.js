@@ -14,25 +14,46 @@ const Signup = () => {
     e.preventDefault();
     try {
       const res = await axios.post('http://localhost:5000/api/user/signup', formData);
-      console.log(res);
-      alert(res.data.message);
+      alert("Signup successful! Please login.");
       window.location.href = '/login';
     } catch (err) {
-      alert(err.response?.data?.error || "Signup failed");
+      const errorMsg = err.response?.data?.details || "Signup failed";
+
+      if (errorMsg.includes("duplicate key error") || errorMsg.includes("User already exists")) {
+        alert("User already exists! Redirecting to login...");
+        window.location.href = '/login';
+      } else {
+        alert(errorMsg);
+      }
     }
   };
 
   return (
     <div className="auth-box">
-     
       <h2>Signup</h2>
       <form onSubmit={handleSubmit}>
-        <input name="name" placeholder="Name" onChange={handleChange} />
-        <input name="username" placeholder="Username" onChange={handleChange} />
-        <input name="email" placeholder="Email" onChange={handleChange} />
-        <input name="password" placeholder="Password" type="password" onChange={handleChange} />
+        <input name="name" placeholder="Name" onChange={handleChange} required />
+        <input name="username" placeholder="Username" onChange={handleChange} required />
+        <input name="email" placeholder="Email" onChange={handleChange} required />
+        <input name="password" placeholder="Password" type="password" onChange={handleChange} required />
         <button type="submit">Signup</button>
       </form>
+
+      {/* ➕ Login Instead Button */}
+      <p style={{ marginTop: '10px' }}>
+        Already have an account?{' '}
+        <button onClick={() => window.location.href = '/login'} style={{
+          background: 'none',
+          border: 'none',
+          color: '#007bff',
+          cursor: 'pointer',
+          textDecoration: 'underline',
+          padding: 0,
+          fontSize: 'inherit'
+        }}>
+          Login Instead
+        </button>
+      </p>
     </div>
   );
 };
